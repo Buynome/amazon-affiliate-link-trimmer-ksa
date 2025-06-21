@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Amazon Affiliate JS Generator</title>
+    <style>
+      body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f5f5f5;
+      color: #333;
+      }
+      textarea, input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      }
+      pre {
+      background-color: #eee;
+      padding: 15px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      }
+      .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Amazon Affiliate Link Trimmer {JavaScript Generator}</h2>
+      <label for="affiliateLink">Paste your full Amazon affiliate URL:</label>
+      <textarea id="affiliateLink" rows="4" placeholder="https://www.amazon.com/...&tag=old-tag"></textarea>
+      <button onclick="generateJS()">Generate JavaScript</button>
+      <h3>Generated JavaScript:</h3>
+      <pre id="outputJS">// Your generated JavaScript will appear here...</pre>
+      <button class="copy-btn" onclick="copyJS()">Copy JavaScript</button>
+    </div>
+    <script>
+      function generateJS() {
+        const rawUrl = document.getElementById("affiliateLink").value.trim();
+        if (!rawUrl.includes("amazon.")) {
+          document.getElementById("outputJS").textContent = "// Invalid Amazon URL.";
+          return;
+        }
+      
+        const safeUrl = rawUrl.replace(/"/g, '\\"'); // escape quotes
+      
+        const jsTemplate = `
+      const originalUrl = "${safeUrl}";
+      
+      fetch('https://raw.githubusercontent.com/Buynome/hosting/refs/heads/main/amazon-affiliate-tag-id-usa.json')
+      .then(response => response.json())
+      .then(data => {
+      const newTag = data.tag;
+      const url = new URL(originalUrl);
+      url.searchParams.set("tag", newTag);
+      console.log("Updated URL:", url.toString());
+      // Optional redirect:
+      window.location.href = url.toString();
+      })
+      .catch(error => console.error("Error loading tag:", error));
+        `.trim();
+      
+        document.getElementById("outputJS").textContent = jsTemplate;
+      }
+    </script>
+    <script type="text/javascript">
+      function copyJS() {
+      
+        const code = document.getElementById("outputJS").textContent;
+        navigator.clipboard.writeText(code).then(() => {
+        alert("JavaScript copied to clipboard!");
+        }).catch(err => {
+        alert("Failed to copy: " + err);
+        });
+      }
+    </script>
+  </body>
+</html>
